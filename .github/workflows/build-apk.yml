@@ -28,7 +28,7 @@ jobs:
       - name: Prepare web folder
         run: |
           mkdir -p www
-          cp index.html data.js data2.js app.js sw.js manifest.webmanifest icon.svg icon-192.png icon-512.png www/
+          cp index.html data.js data2.js data3.js courses.js app.js sw.js manifest.webmanifest icon.svg icon-192.png icon-512.png www/
 
       - name: Install dependencies
         run: npm install
