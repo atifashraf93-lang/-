@@ -36,6 +36,13 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
+      - name: Fixed signing key and version number (so new APKs update the old app)
+        run: |
+          mkdir -p ~/.android
+          cp smaa.keystore ~/.android/debug.keystore
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"2.${{ github.run_number }}\"/" android/app/build.gradle
+          grep -n "versionCode\|versionName" android/app/build.gradle
+
       - name: App icons
         run: |
           RES=android/app/src/main/res
