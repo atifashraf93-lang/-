@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF6DD">
+<title>ننھے ستارے | Nanhe Sitare</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&amp;family=Amiri:wght@400;700&amp;family=Fredoka:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+:root { --bg:#FFF6DD; --surface:#FFFFFF; --text:#2B2A4C; --muted:#6B6A8A; --purple:#7C5CFF; --pink:#FF6FA5; --green:#34C48B; --orange:#FF9B3D; --blue:#3FA9F5; --yellow:#FFD23F; --line:#EADFB9;
+  --urdu:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',serif; --arabic:'Amiri','Noto Naskh Arabic','Traditional Arabic',serif; --latin:'Fredoka',system-ui,sans-serif; }
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; margin:0; background:var(--bg); }
+body { color:var(--text); font-family:var(--urdu); font-size:17px; line-height:2.1; overscroll-behavior:none; user-select:none; }
+button { font-family:inherit; color:inherit; cursor:pointer; }
+h1 { margin:0; font-size:30px; font-weight:600; line-height:1.9; }
+h2 { font-size:19px; font-weight:600; margin:12px 0 4px; line-height:2; }
+.en { direction:ltr; unicode-bidi:isolate; font-family:var(--latin); font-size:13px; line-height:1.5; color:var(--muted); display:block; text-align:start; }
+#app { position:relative; max-width:520px; height:100%; margin:0 auto; background:var(--bg); display:flex; flex-direction:column; overflow:hidden; }
+#views { flex:1; min-height:0; position:relative; }
+.tab { position:absolute; inset:0; overflow-y:auto; padding:max(20px,env(safe-area-inset-top,0px)) 16px 24px; }
+.tab[hidden] { display:none; }
+.sub { font-size:14px; color:var(--muted); margin:0; line-height:2; }
+.hero { background:linear-gradient(135deg,#7C5CFF,#FF6FA5); color:#fff; border-radius:26px; padding:12px 18px 16px; margin-top:4px; }
+.hero small { display:block; font-size:14px; opacity:.9; }
+.hero b { font-size:27px; font-weight:600; display:block; line-height:1.9; }
+.bar { height:12px; border-radius:6px; background:rgba(255,255,255,.35); overflow:hidden; margin-top:6px; }
+.bar i { display:block; height:100%; background:var(--yellow); border-radius:6px; }
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+.tile { border:none; border-radius:22px; padding:10px 14px; text-align:start; min-height:112px; display:flex; flex-direction:column; justify-content:space-between; font-size:19px; font-weight:600; }
+.tile .em { font-size:40px; line-height:1.3; }
+.tile .en { color:inherit; opacity:.7; }
+.c1 { background:#E3DAFF; } .c2 { background:#FFD9E7; } .c3 { background:#CFF3E2; } .c4 { background:#FFE6C7; } .c5 { background:#D2EAFC; } .c6 { background:#E9F7B8; } .lv2 { display:inline-block; background:var(--orange); color:#fff; border-radius:10px; padding:0 8px; font-size:12px; line-height:1.8; margin-inline-start:6px; font-family:var(--latin); }
+.tbl { display:flex; gap:8px; overflow-x:auto; padding:6px 0; }
+.tbl button { flex:none; width:46px; height:46px; border-radius:50%; border:2px solid var(--line); background:var(--surface); font-family:var(--latin); font-size:18px; font-weight:600; }
+.tbl button[aria-pressed="true"] { background:var(--orange); border-color:var(--orange); color:#fff; }
+.eq { display:flex; justify-content:center; gap:10px; font-family:var(--latin); font-size:24px; direction:ltr; padding:4px 0; border-bottom:1px solid var(--line); }
+.pl { display:flex; align-items:center; gap:12px; }
+.pl .em { font-size:36px; }
+.seg { display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
+.seg button { flex:1; min-height:46px; border-radius:23px; border:2px solid var(--line); background:var(--surface); font-size:16px; line-height:1.5; font-weight:600; }
+.seg button[aria-pressed="true"] { background:var(--purple); border-color:var(--purple); color:#fff; }
+.lgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.lgrid.nums { grid-template-columns:repeat(5,1fr); }
+.lt { aspect-ratio:1; border-radius:18px; border:none; background:var(--surface); box-shadow:0 2px 0 var(--line); font-size:34px; font-family:var(--urdu); line-height:1.2; display:flex; align-items:center; justify-content:center; }
+.lt.latin { font-family:var(--latin); font-weight:600; font-size:30px; }
+.lt:nth-child(5n+1) { color:var(--purple); } .lt:nth-child(5n+2) { color:var(--pink); } .lt:nth-child(5n+3) { color:var(--green); } .lt:nth-child(5n+4) { color:var(--orange); } .lt:nth-child(5n) { color:var(--blue); }
+.row { display:flex; align-items:center; gap:12px; width:100%; background:var(--surface); border-radius:20px; padding:8px 14px; margin-top:10px; border:none; box-shadow:0 2px 0 var(--line); text-align:start; }
+.row .em { font-size:34px; line-height:1.3; flex:none; }
+.row b { font-size:18px; font-weight:600; display:block; line-height:1.9; }
+.card { background:var(--surface); border-radius:22px; padding:10px 18px; margin-top:12px; box-shadow:0 2px 0 var(--line); }
+.ar { font-family:var(--arabic); font-size:30px; line-height:2.1; color:var(--purple); text-align:center; direction:rtl; }
+#detail { position:absolute; inset:0; z-index:20; background:var(--bg); overflow-y:auto; padding:max(12px,env(safe-area-inset-top,0px)) 16px 28px; }
+#detail[hidden] { display:none; }
+.back { min-height:44px; background:none; border:none; font-size:16px; color:var(--muted); padding:0; }
+.big { text-align:center; }
+.big .em { font-size:110px; line-height:1.3; }
+.big .lt2 { font-size:80px; line-height:1.4; color:var(--purple); font-family:var(--urdu); }
+.big .wd { font-size:34px; font-weight:600; line-height:1.9; }
+.btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:54px; border:none; border-radius:18px; background:var(--purple); color:#fff; font-size:18px; font-weight:600; margin-top:12px; box-shadow:0 3px 0 #5A3FD0; }
+.btn.alt { background:var(--green); box-shadow:0 3px 0 #1F9E6C; }
+.btn.ghost { background:var(--surface); color:var(--text); box-shadow:0 2px 0 var(--line); }
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.opt { min-height:70px; border-radius:18px; border:3px solid var(--line); background:var(--surface); font-size:22px; font-weight:600; line-height:1.6; }
+.opt.ok { background:#CFF3E2; border-color:var(--green); }
+.opt.bad { background:#FFD9D9; border-color:#FF6B6B; }
+.qimg { font-size:96px; text-align:center; line-height:1.4; }
+.qtxt { font-size:30px; text-align:center; font-weight:600; line-height:1.8; }
+.prog { text-align:center; color:var(--muted); font-size:14px; }
+.mgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+.mc { min-height:84px; border-radius:18px; border:none; background:var(--purple); color:#fff; font-size:34px; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.3; padding:4px; }
+.mc.txt { font-size:20px; font-weight:600; background:var(--pink); }
+.mc.open { background:var(--surface); color:var(--text); box-shadow:0 2px 0 var(--line); }
+.mc.done { opacity:.3; }
+.chk { display:flex; align-items:center; gap:12px; width:100%; min-height:62px; background:var(--surface); border:3px solid var(--line); border-radius:18px; padding:0 14px; margin-top:8px; text-align:start; font-size:18px; font-weight:600; }
+.chk .em { font-size:28px; }
+.chk .tick { margin-inline-start:auto; width:34px; height:34px; border-radius:50%; border:3px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff; }
+.chk[aria-pressed="true"] { background:#FFF3C4; border-color:var(--yellow); }
+.chk[aria-pressed="true"] .tick { background:var(--green); border-color:var(--green); }
+.steps { list-style:none; padding:0; margin:0; }
+.steps li { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); font-size:17px; line-height:2.2; }
+.steps .n { flex:none; width:34px; height:34px; border-radius:50%; background:var(--purple); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--latin); font-size:16px; margin-top:8px; }
+.note { font-size:13px; color:var(--muted); text-align:center; line-height:2.1; margin-top:12px; }
+.stars { text-align:center; font-size:48px; line-height:1.4; }
+.pop { animation:pop .5s ease; }
+@keyframes pop { 0% { transform:scale(.6); opacity:0; } 100% { transform:scale(1); opacity:1; } }
+#nav { display:flex; flex:none; background:var(--surface); border-top:2px solid var(--line); padding-bottom:env(safe-area-inset-bottom,0px); }
+#nav button { flex:1; min-width:0; min-height:66px; border:none; background:none; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:14px; line-height:1.5; color:var(--muted); }
+#nav .ni { font-size:24px; line-height:1.2; }
+#nav button .en { font-size:10px; text-align:center; color:inherit; }
+#nav button[aria-selected="true"] { color:var(--purple); font-weight:600; }
+#toast { position:absolute; z-index:60; left:50%; bottom:88px; transform:translateX(-50%); max-width:calc(100% - 40px); background:var(--text); color:#fff; padding:6px 18px; border-radius:22px; font-size:15px; text-align:center; }
+#toast[hidden] { display:none; }
+#welcome { position:absolute; inset:0; z-index:70; background:var(--bg); overflow-y:auto; padding:max(30px,env(safe-area-inset-top,0px)) 22px 30px; text-align:center; }
+#welcome[hidden] { display:none; }
+#welcome .logo { font-size:80px; line-height:1.3; }
+#welcome input { width:100%; min-height:54px; border-radius:16px; border:3px solid var(--line); background:var(--surface); font-family:var(--urdu); font-size:20px; padding:0 16px; text-align:center; color:var(--text); user-select:text; }
+#splash { position:absolute; inset:0; z-index:80; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity .5s; }
+#splash.gone { opacity:0; pointer-events:none; }
+#splash .logo { font-size:96px; line-height:1.3; }
+#splash h1 { font-size:46px; }
+#splash .latin { font-family:var(--latin); letter-spacing:4px; color:var(--purple); font-weight:600; }
+#splash .dev { direction:ltr; font-family:var(--latin); color:var(--muted); font-size:13px; margin-top:16px; }
+</style>
+</head>
+<body>
+<div id="app">
+<div id="views">
+  <section id="tab-home" class="tab">
+    <div class="hero"><small id="hGreet"></small><b id="hName"></b><span id="hLevel"></span><div class="bar"><i id="hBar" style="width:0"></i></div><small id="hStars" style="margin-top:2px"></small></div>
+    <div class="tiles">
+      <button class="tile c1" data-learn="ur"><span class="em">أ</span><span>اردو<span class="en">Urdu</span></span></button>
+      <button class="tile c5" data-learn="en"><span class="em">🅰️</span><span>انگریزی<span class="en">English</span></span></button>
+      <button class="tile c4" data-learn="math"><span class="em">🔢</span><span>حساب<span class="en">Maths</span></span></button>
+      <button class="tile c3" data-learn="sci"><span class="em">🔬</span><span>سائنس<span class="en">Science</span></span></button>
+      <button class="tile c2" data-go="islam"><span class="em">🕌</span><span>اسلام<span class="en">Islam</span></span></button>
+      <button class="tile c6" data-go="games"><span class="em">🎮</span><span>کھیل<span class="en">Games</span></span></button>
+    </div>
+    <div class="card" id="hToday"></div>
+    <div class="card" id="hStory"></div>
+    <div class="note">ننھے ستارے · Developed by SMAA</div>
+  </section>
+
+  <section id="tab-learn" class="tab" hidden>
+    <h1>سیکھیں <span class="en" style="display:inline">Learn</span></h1>
+    <p class="sub">اردو، انگریزی، حساب اور سائنس</p>
+    <div class="tiles">
+      <button class="tile c1" data-learn="ur"><span class="em">أ</span><span>اردو<span class="en">Urdu</span></span></button>
+      <button class="tile c5" data-learn="en"><span class="em">🅰️</span><span>انگریزی<span class="en">English</span></span></button>
+      <button class="tile c4" data-learn="math"><span class="em">🔢</span><span>حساب<span class="en">Maths</span></span></button>
+      <button class="tile c3" data-learn="sci"><span class="em">🔬</span><span>سائنس<span class="en">Science</span></span></button>
+    </div>
+    <p class="note">ہر سبق میں 🔊 دبا کر سنیں۔ ۹+ کا نشان بڑے بچوں کے اسباق پر ہے۔</p>
+  </section>
+
+  <section id="tab-islam" class="tab" hidden>
+    <h1>اسلام <span class="en" style="display:inline">Islam</span></h1>
+    <p class="sub">دعائیں، ارکان، وضو، نماز اور کہانیاں</p>
+    <button class="row" data-sec="duas"><span class="em">🤲</span><span><b>روزانہ کی دعائیں</b><span class="en">Daily duas</span></span></button>
+    <button class="row" data-sec="arkan"><span class="em">🕋</span><span><b>اسلام کے پانچ ارکان</b><span class="en">Five pillars</span></span></button>
+    <button class="row" data-sec="kalima"><span class="em">☝️</span><span><b>کلمہ طیبہ</b><span class="en">The Kalima</span></span></button>
+    <button class="row" data-sec="wudu"><span class="em">💧</span><span><b>وضو کا طریقہ</b><span class="en">How to make wudu</span></span></button>
+    <button class="row" data-sec="namaz"><span class="em">🧎</span><span><b>نماز کا طریقہ</b><span class="en">How to pray</span></span></button>
+    <button class="row" data-sec="stories"><span class="em">📚</span><span><b>کہانیاں</b><span class="en">Stories</span></span></button>
+    <p class="note">دعاؤں اور مسائل کو ماں باپ یا استاد سے ضرور سنوا لیں۔ نماز اور وضو کا طریقہ حنفی فقہ کے مطابق ہے۔</p>
+  </section>
+
+  <section id="tab-games" class="tab" hidden>
+    <h1>کھیل <span class="en" style="display:inline">Games</span></h1>
+    <p class="sub" id="gSub"></p>
+    <div class="tiles">
+      <button class="tile c3" data-game="quiz"><span class="em">🧠</span><span>اردو کوئز<span class="en">Urdu picture quiz</span></span></button>
+      <button class="tile c5" data-game="eng"><span class="em">🅰️</span><span>انگریزی کوئز<span class="en">English quiz</span></span></button>
+      <button class="tile c6" data-game="sci"><span class="em">🔬</span><span>سائنس کوئز<span class="en">Science quiz</span></span></button>
+      <button class="tile c4" data-game="math"><span class="em">➕</span><span>حساب<span class="en">Maths</span></span></button>
+      <button class="tile c1" data-game="tables"><span class="em">✖️</span><span>پہاڑے<span class="en">Times tables</span></span></button>
+      <button class="tile c2" data-game="count"><span class="em">🍎</span><span>گنو<span class="en">Count it</span></span></button>
+      <button class="tile c5" data-game="match"><span class="em">🃏</span><span>جوڑی ملاؤ<span class="en">Matching</span></span></button>
+    </div>
+    <p class="note">ہر درست جواب پر ستارہ ملتا ہے۔ روزانہ کھیل سے زیادہ سے زیادہ ۱۰ ستارے مل سکتے ہیں۔</p>
+  </section>
+
+  <section id="tab-chart" class="tab" hidden>
+    <h1>میری نیکیاں <span class="en" style="display:inline">My good deeds</span></h1>
+    <p class="sub">آج جو کام کیے انہیں دبائیں، ہر نیکی پر ایک ستارہ</p>
+    <div class="stars" id="cStars"></div>
+    <div id="chartList"></div>
+    <button class="btn ghost" id="settingsBtn">ترتیبات · Settings</button>
+  </section>
+</div>
+
+<nav id="nav" role="tablist" aria-label="ایپ کے حصے">
+  <button role="tab" data-tab="home" aria-selected="true"><span class="ni">🏠</span>ہوم<span class="en">Home</span></button>
+  <button role="tab" data-tab="learn" aria-selected="false"><span class="ni">🔤</span>سیکھیں<span class="en">Learn</span></button>
+  <button role="tab" data-tab="islam" aria-selected="false"><span class="ni">🕌</span>اسلام<span class="en">Islam</span></button>
+  <button role="tab" data-tab="games" aria-selected="false"><span class="ni">🎮</span>کھیل<span class="en">Games</span></button>
+  <button role="tab" data-tab="chart" aria-selected="false"><span class="ni">⭐</span>نیکیاں<span class="en">Stars</span></button>
+</nav>
+
+<div id="detail" hidden></div>
+<div id="toast" hidden role="status"></div>
+<div id="welcome" hidden>
+  <div class="logo">🌟</div>
+  <h1>ننھے ستارے میں خوش آمدید!</h1>
+  <span class="en" style="text-align:center">Welcome to Little Stars</span>
+  <p>آپ کا نام کیا ہے؟</p>
+  <input id="nameIn" maxlength="20" placeholder="نام لکھیں" autocomplete="off">
+  <p>آپ کی عمر؟ <span class="en" style="display:inline">Your age?</span></p>
+  <div class="seg" id="ageSeg"><button data-lv="1" aria-pressed="true">۵ سے ۸ سال</button><button data-lv="2" aria-pressed="false">۹ سے ۱۳ سال</button></div>
+  <button class="btn alt" id="startBtn">شروع کریں! 🚀</button>
+</div>
+<div id="splash"><div class="logo">🌟</div><h1>ننھے ستارے</h1><div class="latin">NANHE SITARE</div><div class="dev">Developed by SMAA</div></div>
+</div>
+<script src="data.js"></script>
+<script src="data2.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
