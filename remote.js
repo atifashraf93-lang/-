@@ -81,7 +81,7 @@
     if (!i) { i = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); set('iid', i); }
     return i;
   }
-  var queue = [];
+  var queue = [], timer = 0;
   var shown = Date.now(), visible = document.visibilityState !== 'hidden';
   function androidVer() { var m = /Android (\d+)/.exec(navigator.userAgent); return m ? m[1] : ''; }
   function tz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
@@ -90,6 +90,7 @@
     if (!STATS_URL || !statsOn()) return;
     queue.push({ e: ev, n: n || 1, t: Date.now() });
     if (queue.length >= 15) flush();
+    else if (!timer) timer = setTimeout(function () { timer = 0; flush(); }, 4000);
   }
   function flush() {
     if (!STATS_URL || !statsOn() || !queue.length || navigator.onLine === false) return;
@@ -106,7 +107,8 @@
       visible = false; flush();
     } else { visible = true; shown = Date.now(); track('open'); }
   });
-  setInterval(flush, 60000);
+  setInterval(flush, 30000);
+  window.addEventListener('pagehide', function () { if (visible) track('secs', Math.round((Date.now() - shown) / 1000)); flush(); });
 
   /* feature usage: only the name of the screen/section that was opened */
   if (FEATURES) document.addEventListener('click', function (e) {
