@@ -377,9 +377,10 @@
       '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Age level', 'عمر کی سطح') + '</div><div class="seg" data-set="lv"><button data-v="1" aria-pressed="' + (P.lv !== 2) + '">5–8</button><button data-v="2" aria-pressed="' + (P.lv === 2) + '">9–13</button></div>' +
       '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Daily goal (lessons)', 'روزانہ ہدف (اسباق)') + '</div><div class="seg" data-set="goal">' + [1, 2, 3, 5].map(function (g) { return '<button data-v="' + g + '" aria-pressed="' + (goal() === g) + '">' + g + '</button>'; }).join('') + '</div>' +
       '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Sounds & voice', 'آوازیں') + '</div><div class="seg"><button data-tog="sound" aria-pressed="' + setting('sound', true) + '">🔔 ' + B('Sound effects', 'آوازیں') + '</button><button data-tog="speak" aria-pressed="' + setting('speak', true) + '">🔊 ' + B('Auto-read words', 'خود پڑھیں') + '</button></div>' +
+      '<div class="seg"><button data-act="stats" aria-pressed="' + (window.SMAA ? window.SMAA.statsOn() : false) + '">📊 ' + B('Anonymous usage count', 'گمنام استعمال کی گنتی') + '</button></div>' +
       '<div class="seg"><button data-tog="unlock" aria-pressed="' + setting('unlock', false) + '">🔓 ' + B('Unlock all lessons', 'تمام اسباق کھولیں') + '</button></div>' +
       '<button class="btn3d red" data-act="reset" style="margin-top:16px">' + B('Reset progress', 'ریکارڈ صفر کریں') + '</button><button class="btn3d white" data-act="closemodal" style="margin-top:10px">' + B('Close', 'بند کریں') + '</button>' +
-      '<p class="muted sm" style="margin-top:12px;line-height:1.5">' + B('Privacy: all progress stays on this device. There are no ads, accounts or tracking.', 'رازداری: تمام ریکارڈ صرف اس فون میں رہتا ہے۔ کوئی اشتہار، اکاؤنٹ یا ٹریکنگ نہیں۔') + '<br>Nanhe Sitare v2 · Developed by SMAA</p>';
+      '<p class="muted sm" style="margin-top:12px;line-height:1.5">' + B('Privacy: all progress stays on this device. No ads or accounts. If switched on, only an anonymous count of app opens is sent (no names, no lessons).', 'رازداری: تمام ریکارڈ صرف اس فون میں رہتا ہے۔ کوئی اشتہار یا اکاؤنٹ نہیں۔ آن ہو تو صرف ایپ کھلنے کی گمنام گنتی جاتی ہے (نام یا اسباق نہیں)۔') + '<br>Nanhe Sitare v2 · Developed by SMAA</p>';
     openModal(h);
   }
 
@@ -415,9 +416,10 @@
       if (a === 'closepath') return closePath();
       if (a === 'closemodal') return closeModal();
       if (a === 'parent') return parentGate();
+      if (a === 'stats') { if (window.SMAA) window.SMAA.setStats(!window.SMAA.statsOn()); return parentZone(); }
       if (a === 'daily') return startDaily();
       if (a === 'match') return startMatch();
-      if (a === 'reset') { if (t.dataset.sure) { try { Object.keys(localStorage).filter(function (k2) { return k2.indexOf('nanhe2.') === 0 && k2 !== 'nanhe2.profile'; }).forEach(function (k2) { localStorage.removeItem(k2); }); } catch (x) { /* ignore */ } prog = {}; closeModal(); refresh(); return toast('Progress reset', 'ریکارڈ صفر ہو گیا'); } t.dataset.sure = '1'; t.innerHTML = B('Tap again to confirm', 'تصدیق کے لیے دوبارہ دبائیں'); return; }
+      if (a === 'reset') { if (t.dataset.sure) { try { Object.keys(localStorage).filter(function (k2) { return k2.indexOf('nanhe2.') === 0 && ['nanhe2.profile', 'nanhe2.iid', 'nanhe2.stats'].indexOf(k2) < 0; }).forEach(function (k2) { localStorage.removeItem(k2); }); } catch (x) { /* ignore */ } prog = {}; closeModal(); refresh(); return toast('Progress reset', 'ریکارڈ صفر ہو گیا'); } t.dataset.sure = '1'; t.innerHTML = B('Tap again to confirm', 'تصدیق کے لیے دوبارہ دبائیں'); return; }
     }
   });
 
