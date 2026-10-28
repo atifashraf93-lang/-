@@ -188,6 +188,6 @@
     });
   });
 
-  root.NanheCourses = { subjects: subjects, T: T, urd: urd, shuffle: shuffle };
+  root.NanheCourses = { subjects: subjects, T: T, urd: urd, shuffle: shuffle, Q: Q, numQ: numQ, expr: expr, rnd: rnd, pick: pick, mix: mix, textCard: textCard };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.NanheCourses;
 })(typeof self !== 'undefined' ? self : this);

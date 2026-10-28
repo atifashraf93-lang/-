@@ -42,7 +42,47 @@
       ['🌍💙', 'Earth is the only planet we know that has liquid water and life. About 70 percent of it is covered by oceans.', 'زمین واحد سیارہ ہے جہاں پانی اور زندگی کا ہمیں علم ہے۔ اس کا تقریباً ستر فیصد حصہ سمندروں سے ڈھکا ہے۔'],
       ['🔴🏜️', 'Mars is called the Red Planet because its soil contains rusty iron. Robots called rovers explore it.', 'مریخ کو سرخ سیارہ کہتے ہیں کیونکہ اس کی مٹی میں زنگ آلود لوہا ہے۔ روور نامی روبوٹ اس کی کھوج کرتے ہیں۔'],
       ['🪐✨', 'Saturn has beautiful rings made of ice and rock. Jupiter is the biggest planet of all.', 'زحل کے خوبصورت چھلے برف اور پتھروں سے بنے ہیں۔ مشتری سب سے بڑا سیارہ ہے۔'],
-      ['🌌🤲', '“He created the sun, the moon and the stars, each moving in its orbit.” Look up tonight and think about it.', 'سورج، چاند اور ستارے سب اپنے اپنے مدار میں چل رہے ہیں۔ آج رات آسمان کو دیکھیں اور اس پر غور کریں۔']] }
+      ['🌌🤲', '“He created the sun, the moon and the stars, each moving in its orbit.” Look up tonight and think about it.', 'سورج، چاند اور ستارے سب اپنے اپنے مدار میں چل رہے ہیں۔ آج رات آسمان کو دیکھیں اور اس پر غور کریں۔']] },
+    { id: 'wolf', cat: 'story', bands: [1, 3], c1: '#E5484D', c2: '#FF8A8F', em: '🐺', t: ['The Boy Who Cried Wolf', 'بھیڑیا آیا، بھیڑیا آیا'], pages: [
+      ['🐑🧒⛰️', 'A shepherd boy looked after the village sheep on a hill.', 'ایک چرواہا لڑکا پہاڑی پر گاؤں کی بھیڑوں کی دیکھ بھال کرتا تھا۔'],
+      ['😜📣', 'One day he was bored. He shouted, “Wolf! Wolf!” just for fun.', 'ایک دن وہ اکتا گیا۔ اس نے مذاق میں چلا کر کہا، "بھیڑیا! بھیڑیا!"'],
+      ['🏃‍♂️😠', 'The villagers ran to help, but there was no wolf. They were angry.', 'گاؤں والے مدد کو دوڑے مگر وہاں کوئی بھیڑیا نہیں تھا۔ وہ ناراض ہوئے۔'],
+      ['🐺🐑😱', 'Later a real wolf came. The boy cried, “Wolf!” but this time nobody believed him.', 'کچھ دیر بعد سچ مچ بھیڑیا آ گیا۔ لڑکا چلایا مگر اس بار کسی نے یقین نہ کیا۔'],
+      ['😢🌙', 'The sheep were lost. The boy learned that liars are not believed, even when they tell the truth.', 'بھیڑیں کھو گئیں۔ لڑکے نے سیکھا کہ جھوٹے کی بات سچ ہو تب بھی کوئی نہیں مانتا۔']] },
+    { id: 'grapes', cat: 'story', bands: [1, 3], c1: '#7C5CFF', c2: '#B39DFF', em: '🍇', t: ['The Fox and the Grapes', 'لومڑی اور انگور'], pages: [
+      ['🦊🍇☀️', 'A hungry fox saw ripe grapes hanging high on a vine.', 'ایک بھوکی لومڑی نے بیل پر اونچے لٹکے پکے انگور دیکھے۔'],
+      ['🦊⬆️', 'She jumped and jumped, but she could not reach them.', 'اس نے کئی چھلانگیں لگائیں مگر انگور تک نہ پہنچ سکی۔'],
+      ['🦊😒🍇', 'At last she walked away. “They are probably sour anyway,” she said.', 'آخر وہ چل پڑی اور بولی، "یہ تو شاید کھٹے ہی ہوں گے۔"'],
+      ['💡⭐', 'Do not blame things you cannot get. Try harder, or be honest about it.', 'جو چیز نہ ملے اسے برا مت کہو۔ اور محنت کرو یا سچ مان لو۔']] },
+    { id: 'goose', cat: 'story', bands: [2, 4], c1: '#FFC83D', c2: '#FFE08A', em: '🪿', t: ['The Golden Eggs', 'سنہری انڈے'], pages: [
+      ['👨‍🌾🪿', 'A farmer had a goose that laid one golden egg every day.', 'ایک کسان کے پاس ایک ہنس تھی جو روز ایک سنہری انڈا دیتی تھی۔'],
+      ['🥚✨💰', 'He sold the eggs and became rich, but he wanted more, and he wanted it now.', 'وہ انڈے بیچ کر امیر ہو گیا مگر اسے اور چاہیے تھا، اور ابھی چاہیے تھا۔'],
+      ['🔪😨', 'He thought, “There must be a lot of gold inside her.” He cut the goose open.', 'اس نے سوچا، "اس کے اندر بہت سا سونا ہو گا۔" اس نے ہنس کو چیر دیا۔'],
+      ['😭🪿', 'There was no gold inside. And now there would be no more eggs.', 'اندر کچھ نہ تھا، اور اب مزید انڈے بھی نہیں ملنے تھے۔'],
+      ['💡⭐', 'Greed can destroy what we already have. Be thankful and patient.', 'لالچ ہاتھ کی چیز بھی کھو دیتا ہے۔ شکر اور صبر کرو۔']] },
+    { id: 'iftar', cat: 'islamic', bands: [1, 3], c1: '#14A38B', c2: '#7BE0C8', em: '🌙', t: ['The Iftar Surprise', 'افطار کا تحفہ'], pages: [
+      ['🌙🏠', 'It was Ramadan. Ayesha and her mother cooked dates, samosas and sweet drinks for iftar.', 'رمضان تھا۔ عائشہ اور اس کی امی نے افطار کے لیے کھجوریں، سموسے اور شربت تیار کیا۔'],
+      ['🚪👦', 'Just before the azan, Ayesha saw the new boy next door standing alone.', 'اذان سے ذرا پہلے عائشہ نے ساتھ والے گھر کے نئے لڑکے کو اکیلا کھڑا دیکھا۔'],
+      ['🍽️🤝', '“Mama, may we share our iftar with him?” “Of course, beta,” said her mother.', '"امی، کیا ہم اپنا افطار اس کے ساتھ بانٹیں؟" امی نے کہا، "ضرور بیٹا۔"'],
+      ['🤲🌅', 'They broke the fast together with dates and dua.', 'سب نے مل کر کھجور اور دعا کے ساتھ روزہ کھولا۔'],
+      ['😊💖', 'Sharing makes food taste sweeter and hearts feel closer.', 'بانٹنے سے کھانے کا مزہ بڑھ جاتا ہے اور دل قریب آ جاتے ہیں۔']] },
+    { id: 'water', cat: 'science', bands: [2, 4], c1: '#3FA9F5', c2: '#8AD0FF', em: '💧', t: ['The Journey of a Water Drop', 'پانی کی بوند کا سفر'], pages: [
+      ['🌊☀️', 'The Sun warms the sea. Some water turns into invisible vapour and rises. This is evaporation.', 'سورج سمندر کو گرم کرتا ہے۔ کچھ پانی نظر نہ آنے والی بھاپ بن کر اوپر اٹھتا ہے۔ اسے بخارات بننا کہتے ہیں۔'],
+      ['☁️⬆️', 'High up it is cold. The vapour turns into tiny drops and makes clouds. This is condensation.', 'اوپر ٹھنڈ ہوتی ہے۔ بھاپ چھوٹے قطرے بن کر بادل بناتی ہے۔ اسے تکثیف کہتے ہیں۔'],
+      ['🌧️⬇️', 'When the drops get heavy, they fall as rain. This is precipitation.', 'جب قطرے بھاری ہو جاتے ہیں تو بارش بن کر گرتے ہیں۔'],
+      ['⛰️🏞️', 'Rain fills rivers, lakes and the ground. Plants and animals drink it.', 'بارش ندیاں، جھیلیں اور زمین بھر دیتی ہے۔ پودے اور جانور اسے پیتے ہیں۔'],
+      ['🌊🔁', 'Rivers flow back to the sea, and the journey begins again. Water is never lost, it just keeps travelling.', 'دریا واپس سمندر میں جاتے ہیں اور سفر پھر شروع ہوتا ہے۔ پانی ضائع نہیں ہوتا، بس سفر کرتا رہتا ہے۔']] },
+    { id: 'seasons', cat: 'science', bands: [3, 4], c1: '#FF9B3D', c2: '#FFC070', em: '🌍', t: ['Why Do We Have Seasons?', 'موسم کیوں بدلتے ہیں؟'], pages: [
+      ['🌍☀️', 'The Earth goes around the Sun once every year. This is called its orbit.', 'زمین سال میں ایک بار سورج کے گرد چکر لگاتی ہے۔ اسے مدار کہتے ہیں۔'],
+      ['🌍↗️', 'The Earth is tilted. It leans a little to one side as it travels.', 'زمین ایک طرف جھکی ہوئی ہے اور اسی جھکاؤ کے ساتھ سفر کرتی ہے۔'],
+      ['☀️🏖️', 'When your part of the Earth leans towards the Sun, the days are long and warm. That is summer.', 'جب آپ کا علاقہ سورج کی طرف جھکا ہو تو دن لمبے اور گرم ہوتے ہیں۔ یہ گرمی ہے۔'],
+      ['❄️⛄', 'When it leans away, the days are short and cold. That is winter.', 'جب وہ دور کی طرف جھکا ہو تو دن چھوٹے اور ٹھنڈے ہوتے ہیں۔ یہ سردی ہے۔'],
+      ['🍂🌸', 'In between come autumn and spring. When it is summer in Pakistan, it is winter in Australia!', 'ان کے بیچ خزاں اور بہار آتی ہیں۔ جب پاکستان میں گرمی ہوتی ہے تو آسٹریلیا میں سردی ہوتی ہے!']] },
+    { id: 'rainbow', cat: 'science', bands: [3, 4], c1: '#FF6FA5', c2: '#FFA8CB', em: '🌈', t: ['Light and Rainbows', 'روشنی اور قوسِ قزح'], pages: [
+      ['☀️💡', 'Sunlight looks white, but it is made of many colours mixed together.', 'دھوپ سفید نظر آتی ہے مگر اس میں بہت سے رنگ ملے ہوتے ہیں۔'],
+      ['🔺🌈', 'A glass prism bends light. Each colour bends by a different amount, so the colours spread out.', 'شیشے کا منشور روشنی کو موڑتا ہے۔ ہر رنگ الگ مقدار میں مڑتا ہے اس لیے رنگ الگ الگ ہو جاتے ہیں۔'],
+      ['🌧️☀️', 'A rainbow forms when sunlight passes through raindrops. You need the Sun behind you and rain in front.', 'جب دھوپ بارش کے قطروں سے گزرتی ہے تو قوسِ قزح بنتی ہے۔ سورج آپ کے پیچھے اور بارش سامنے ہونی چاہیے۔'],
+      ['🌈✨', 'The seven colours are red, orange, yellow, green, blue, indigo and violet.', 'سات رنگ یہ ہیں: سرخ، نارنجی، پیلا، سبز، نیلا، گہرا نیلا اور جامنی۔']] }
   ];
   window.NanheBookCats = [['all', 'All', 'سب'], ['story', 'Stories', 'کہانیاں'], ['islamic', 'Islamic', 'اسلامی'], ['science', 'Science', 'سائنس']];
 })();

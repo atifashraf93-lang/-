@@ -44,7 +44,7 @@
   };
   function band() { return Math.min(4, Math.max(1, (P && P.band) || 2)); }
   function bandInfo() { return BANDS[band() - 1]; }
-  function inBand(u) { var r = UB[u.id] || (u.subj === 'sci' ? [1, 3] : [1, 4]), b = band(); return b >= r[0] && b <= r[1]; }
+  function inBand(u) { var r = u.bands || UB[u.id] || (u.subj === 'sci' ? [1, 3] : [1, 4]), b = band(); return b >= r[0] && b <= r[1]; }
   function applyBand() {
     var b = band(); SUBJ = ALL.map(function (s) { var c = {}; for (var k in s) c[k] = s[k]; c.units = s.units.filter(inBand); return c; }).filter(function (s) { return s.units.length; });
     document.body.setAttribute('data-band', b);
@@ -263,6 +263,15 @@
     if (!bookIn(b)) { SFX.bad(); return toast(b.bands[0] > band() ? 'This book is for bigger kids' : 'This book is for younger kids', b.bands[0] > band() ? 'یہ کتاب بڑے بچوں کے لیے ہے' : 'یہ کتاب چھوٹے بچوں کے لیے ہے'); }
     RD = { b: b, i: 0 }; L = { opts: { mode: 'read' } }; $('#lesson').hidden = false; drawBook();
   }
+  function sceneSvg(em, c1, c2) {
+    var night = /🌙|🌌|😴|☪|🌃/.test(em), snow = /❄|⛄/.test(em), rain = /🌧/.test(em), id = 's' + Math.floor(Math.random() * 1e6);
+    var top = night ? '#1E2A6B' : snow ? '#B9D8F5' : rain ? '#8FA9C8' : '#8FD3FF', bot = night ? '#3D4A9E' : snow ? '#EAF4FF' : rain ? '#C9D6E6' : '#E6F7FF';
+    var deco = night ? '<circle cx="40" cy="30" r="2" fill="#fff"/><circle cx="120" cy="18" r="1.6" fill="#fff"/><circle cx="250" cy="34" r="2.2" fill="#fff"/><circle cx="300" cy="14" r="1.6" fill="#fff"/><circle cx="190" cy="26" r="1.8" fill="#FFE770"/><path d="M270 40a14 14 0 1 0 8 24 11 11 0 0 1-8-24z" fill="#FFE770"/>'
+      : '<circle cx="' + (snow || rain ? 280 : 55) + '" cy="40" r="' + (snow || rain ? 0 : 20) + '" fill="#FFE770"/><ellipse cx="230" cy="36" rx="34" ry="12" fill="#fff" opacity=".85"/><ellipse cx="250" cy="28" rx="20" ry="12" fill="#fff" opacity=".85"/><ellipse cx="80" cy="62" rx="28" ry="9" fill="#fff" opacity=".7"/>';
+    return '<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + top + '"/><stop offset="1" stop-color="' + bot + '"/></linearGradient></defs><rect width="320" height="200" fill="url(#' + id + ')"/>' + deco +
+      '<path d="M0 150 Q70 118 150 144 T320 132 V200 H0Z" fill="' + (snow ? '#fff' : night ? '#2B3A7A' : c2) + '" opacity=".95"/><path d="M0 172 Q90 146 190 168 T320 160 V200 H0Z" fill="' + (snow ? '#DCEBFA' : night ? '#222F68' : c1) + '"/>' +
+      '<ellipse cx="160" cy="168" rx="70" ry="9" fill="rgba(0,0,0,.14)"/><text x="160" y="152" text-anchor="middle" font-size="66">' + em + '</text></svg>';
+  }
   function drawBook() {
     var b = RD.b, n = b.pages.length;
     if (RD.i >= n) {
@@ -270,7 +279,7 @@
       lessonShell('<div style="margin-top:20px">' + mascot('cheer', 'lg', true) + '</div><div class="h1">' + B('The End', 'ختم شد') + '</div><div class="muted">' + (first ? '+2 ⭐' : '') + '</div>', '<button class="btn3d" data-act="quit">' + B('Back to books', 'کتابوں میں واپس') + '</button>', 100); return;
     }
     var p = b.pages[RD.i], dots = ''; for (var k = 0; k < n; k++) dots += '<i class="' + (k === RD.i ? 'on' : '') + '"></i>';
-    lessonShell('<div id="reader" style="--c1:' + b.c1 + ';--c2:' + b.c2 + '"><div class="scene" aria-hidden="true">' + p[0] + '</div><div class="txt">' + B(p[1], p[2]) + '</div>' + sayBtns({ sayEn: p[1], sayUr: p[2] }) + '<div class="dots">' + dots + '</div></div>',
+    lessonShell('<div id="reader" style="--c1:' + b.c1 + ';--c2:' + b.c2 + '"><div class="scene" aria-hidden="true">' + sceneSvg(p[0], b.c1, b.c2) + '</div><div class="txt">' + B(p[1], p[2]) + '</div>' + sayBtns({ sayEn: p[1], sayUr: p[2] }) + '<div class="dots">' + dots + '</div></div>',
       '<div class="hrow">' + (RD.i > 0 ? '<button class="btn3d white" data-bpage="-1">←</button>' : '') + '<button class="btn3d" data-bpage="1">' + (RD.i === n - 1 ? B('Finish', 'مکمل') : B('Next', 'اگلا')) + ' →</button></div>', Math.round(RD.i / n * 100));
     if (setting('speak', true) && (setting('mode', 'both') !== 'ur')) setTimeout(function () { if (RD && RD.b === b) speak(p[1], 'en'); }, 300);
   }

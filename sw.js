@@ -1,6 +1,6 @@
 /* Aashiyana service worker: caches the app so it opens offline. */
-var VERSION = 'nanhe-v5';
-var SHELL = ['./', 'index.html', 'data.js', 'data2.js', 'data3.js', 'courses.js', 'books.js', 'remote.js', 'app.js', 'manifest.webmanifest', 'icon.svg'];
+var VERSION = 'nanhe-v6';
+var SHELL = ['./', 'index.html', 'data.js', 'data2.js', 'data3.js', 'courses.js', 'adv.js', 'books.js', 'remote.js', 'app.js', 'manifest.webmanifest', 'icon.svg'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (k) { return Promise.all(k.filter(function (x) { return x !== VERSION; }).map(function (x) { return caches.delete(x); })); }).then(function () { return self.clients.claim(); })); });
 self.addEventListener('fetch', function (e) {
