@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var D = window.NanheData, D3 = window.NanheData3, C = window.NanheCourses;
-  var SUBJ = C.subjects, urd = C.urd, shuffle = C.shuffle;
+  var ALL = C.subjects, SUBJ = ALL, urd = C.urd, shuffle = C.shuffle;
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -17,12 +17,40 @@
   function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function yesterdayKey() { var d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
   function subjById(id) { return SUBJ.filter(function (s) { return s.id === id; })[0]; }
-  function unitById(id) { var r = null; SUBJ.forEach(function (s) { s.units.forEach(function (u) { if (u.id === id) r = u; }); }); return r; }
+  function unitById(id) { var r = null; ALL.forEach(function (s) { s.units.forEach(function (u) { if (u.id === id) r = u; }); }); return r; }
 
   /* ---------- settings and progress ---------- */
-  var P = store('profile') || null;               // {name, lv, mode, goal, sound, speak, unlock}
+  var P = store('profile') || null;
+  if (P && !P.band) { P.band = P.lv === 2 ? 3 : 2; store('profile', P); }               // {name, lv, mode, goal, sound, speak, unlock}
   function setting(k, d) { return P && P[k] !== undefined ? P[k] : d; }
   function saveP() { store('profile', P); }
+  /* age bands: 1 = 3-5, 2 = 6-8, 3 = 9-11, 4 = 12-14 */
+  var BANDS = [
+    { n: 1, age: '3–5', en: 'Tiny Stars', ur: 'ننھے ستارے', c: '#FF6FA5', q: 4, pairs: 4 },
+    { n: 2, age: '6–8', en: 'Bright Stars', ur: 'روشن ستارے', c: '#FF9B3D', q: 5, pairs: 6 },
+    { n: 3, age: '9–11', en: 'Super Stars', ur: 'سپر ستارے', c: '#34C48B', q: 6, pairs: 8 },
+    { n: 4, age: '12–14', en: 'Rising Stars', ur: 'ابھرتے ستارے', c: '#7C5CFF', q: 8, pairs: 10 }
+  ];
+  /* [min band, max band] for each lesson; anything not listed is open to all */
+  var UB = {
+    'eng.abc0': [1, 2], 'eng.abc5': [1, 2], 'eng.abc10': [1, 2], 'eng.abc15': [1, 2], 'eng.abc20': [1, 2], 'urd.let0': [1, 3], 'urd.let5': [1, 3], 'urd.let10': [1, 3], 'urd.let15': [1, 3], 'urd.let20': [1, 3],
+    'eng.animals': [1, 2], 'eng.fruits': [1, 2], 'eng.veg': [1, 2], 'eng.colours': [1, 2], 'eng.body': [1, 2], 'eng.family': [1, 2], 'eng.transport': [1, 2], 'eng.school': [1, 3], 'eng.weather': [1, 3], 'eng.clothes': [1, 3], 'eng.days': [1, 3],
+    'eng.opp': [1, 3], 'eng.sent': [2, 4], 'eng.gram0': [2, 3], 'eng.gram1': [2, 3], 'eng.gram2': [2, 3], 'eng.gram3': [2, 4], 'eng.gram4': [3, 4], 'eng.gram5': [3, 4], 'eng.gram6': [3, 4], 'eng.gram7': [3, 4],
+    'urd.num1': [1, 2], 'urd.num11': [1, 3], 'urd.let25': [2, 4], 'urd.let30': [2, 4],
+    'math.cnt1': [1, 2], 'math.cnt11': [1, 2], 'math.shapes': [1, 2], 'math.add10': [1, 2], 'math.sub10': [1, 2], 'math.add20': [2, 3], 'math.sub20': [2, 3],
+    'math.tab2': [2, 3], 'math.tab3': [2, 3], 'math.tab4': [2, 3], 'math.tab5': [2, 3], 'math.tab6': [3, 4], 'math.tab7': [3, 4], 'math.tab8': [3, 4], 'math.tab9': [3, 4], 'math.tab10': [3, 4], 'math.tab11–12': [3, 4],
+    'math.evenodd': [2, 3], 'math.time': [2, 3], 'math.fractions': [3, 4], 'math.measure': [3, 4], 'math.place': [3, 4], 'math.mult': [3, 4], 'math.div': [3, 4], 'math.area': [3, 4],
+    'sci.space': [2, 4], 'isl.arkan': [2, 4], 'isl.wudu': [2, 4], 'isl.namaz': [2, 4]
+  };
+  function band() { return Math.min(4, Math.max(1, (P && P.band) || 2)); }
+  function bandInfo() { return BANDS[band() - 1]; }
+  function inBand(u) { var r = UB[u.id] || (u.subj === 'sci' ? [1, 3] : [1, 4]), b = band(); return b >= r[0] && b <= r[1]; }
+  function applyBand() {
+    var b = band(); SUBJ = ALL.map(function (s) { var c = {}; for (var k in s) c[k] = s[k]; c.units = s.units.filter(inBand); return c; }).filter(function (s) { return s.units.length; });
+    document.body.setAttribute('data-band', b);
+    var m = document.querySelector('meta[name=theme-color]'); if (m) m.setAttribute('content', ['#FFD9E8', '#CFEFFF', '#CDF3DE', '#DCD3FF'][b - 1]);
+  }
+  function doneAll(sid) { var s = ALL.filter(function (x) { return x.id === sid; })[0]; return s ? s.units.filter(function (u) { return prog[u.id] && prog[u.id].stars >= 1; }).length : 0; }
   var prog = store('prog') || {};                 // unitId -> {stars, best}
   function bonus() { return store('bonus') || 0; }
   function totalStars() { var n = bonus(); Object.keys(prog).forEach(function (k) { n += prog[k].stars || 0; }); return n; }
@@ -96,11 +124,11 @@
     var mouth = state === 'cheer' ? '<path d="M48 74 Q60 92 72 74 Z" fill="#7A2E1F"/><path d="M53 82 Q60 88 67 82" fill="#FF8FA3"/>' : state === 'sad' ? '<path d="M50 82 Q60 72 70 82" stroke="#7A2E1F" stroke-width="3.5" fill="none" stroke-linecap="round"/>' : state === 'think' ? '<ellipse cx="62" cy="78" rx="4" ry="5" fill="#7A2E1F"/>' : '<path d="M49 74 Q60 86 71 74" stroke="#7A2E1F" stroke-width="3.5" fill="none" stroke-linecap="round"/>';
     var brow = state === 'think' ? '<path d="M64 50 L80 46" stroke="#7A2E1F" stroke-width="3" stroke-linecap="round"/>' : state === 'sad' ? '<path d="M38 52 L52 56 M82 52 L68 56" stroke="#7A2E1F" stroke-width="3" stroke-linecap="round"/>' : '';
     var arms = state === 'cheer' ? '<circle cx="12" cy="36" r="8" fill="#FFD23F" stroke="#FFB400" stroke-width="3"/><circle cx="108" cy="36" r="8" fill="#FFD23F" stroke="#FFB400" stroke-width="3"/>' : '';
-    var id = 'g' + Math.floor(Math.random() * 1e6);
+    var id = 'g' + Math.floor(Math.random() * 1e6), bd = band(), acc = bd === 1 ? '<path d="M60 16 L43 6 L43 24 Z M60 16 L77 6 L77 24 Z" fill="#FF6FA5" stroke="#E0457F" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="16" r="5" fill="#FF93BE"/>' : bd === 3 ? '<path d="M34 26 L60 12 L86 26 L60 38 Z" fill="#2B2A4C"/><path d="M48 33 V43 Q60 49 72 43 V33" fill="#3B3A6C"/><path d="M86 26 V42" stroke="#FFC83D" stroke-width="2.5"/><circle cx="86" cy="44" r="3" fill="#FFC83D"/>' : bd === 4 ? '<path d="M27 62 A33 33 0 0 1 93 62" fill="none" stroke="#7C5CFF" stroke-width="6" stroke-linecap="round"/><rect x="21" y="56" width="11" height="22" rx="5" fill="#5B3FE0"/><rect x="88" y="56" width="11" height="22" rx="5" fill="#5B3FE0"/>' : '';
     return '<svg class="mascot ' + (size || 'md') + (anim ? ' bounce' : '') + '" viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE770"/><stop offset="1" stop-color="#FFB400"/></linearGradient></defs>' + arms +
       '<polygon points="' + pts.join(' ') + '" fill="url(#' + id + ')" stroke="#FFB400" stroke-width="9" stroke-linejoin="round"/><polygon points="' + pts.join(' ') + '" fill="url(#' + id + ')" stroke-linejoin="round"/>' +
       '<ellipse cx="48" cy="62" rx="7" ry="8.5" fill="#fff"/><ellipse cx="72" cy="62" rx="7" ry="8.5" fill="#fff"/><circle cx="49.5" cy="63" r="4.5" fill="#2B2A4C"/><circle cx="73.5" cy="63" r="4.5" fill="#2B2A4C"/><circle cx="51" cy="61" r="1.6" fill="#fff"/><circle cx="75" cy="61" r="1.6" fill="#fff"/>' +
-      '<circle cx="38" cy="73" r="5.5" fill="#FF8FA3" opacity=".55"/><circle cx="82" cy="73" r="5.5" fill="#FF8FA3" opacity=".55"/>' + brow + mouth + '</svg>';
+      '<circle cx="38" cy="73" r="5.5" fill="#FF8FA3" opacity=".55"/><circle cx="82" cy="73" r="5.5" fill="#FF8FA3" opacity=".55"/>' + brow + mouth + acc + '</svg>';
   }
 
   /* ---------- badges ---------- */
@@ -112,13 +140,13 @@
     ['star100', '🌟', '#FFB400', '100 stars', '۱۰۰ ستارے', function () { return totalStars() >= 100; }],
     ['star250', '🏆', '#E89B00', '250 stars', '۲۵۰ ستارے', function () { return totalStars() >= 250; }],
     ['perfect', '💯', '#34C48B', 'Perfect lesson', 'سو فیصد سبق', function () { return Object.keys(prog).some(function (k) { return prog[k].stars >= 3; }); }],
-    ['eng', '🅰️', '#3FA9F5', 'English explorer', 'انگریزی کا ماہر', function () { return unitsDone('eng') >= 5; }],
-    ['urd', 'أ', '#34C48B', 'Urdu learner', 'اردو سیکھنے والا', function () { return unitsDone('urd') >= 3; }],
-    ['math', '🔢', '#FF9B3D', 'Maths whiz', 'حساب کا جادوگر', function () { return unitsDone('math') >= 5; }],
-    ['sci', '🔬', '#7C5CFF', 'Young scientist', 'ننھا سائنسدان', function () { return unitsDone('sci') >= 4; }],
-    ['isl', '🕌', '#14A38B', 'Dua learner', 'دعا یاد کرنے والا', function () { return unitsDone('isl') >= 3; }],
-    ['sto', '📚', '#FF6FA5', 'Story lover', 'کہانیوں کا شوقین', function () { return unitsDone('sto') >= 2; }],
-    ['all', '🌈', '#7C5CFF', 'All-rounder', 'ہر فن مولا', function () { return SUBJ.every(function (s) { return unitsDone(s.id) >= 1; }); }],
+    ['eng', '🅰️', '#3FA9F5', 'English explorer', 'انگریزی کا ماہر', function () { return doneAll('eng') >= 5; }],
+    ['urd', 'أ', '#34C48B', 'Urdu learner', 'اردو سیکھنے والا', function () { return doneAll('urd') >= 3; }],
+    ['math', '🔢', '#FF9B3D', 'Maths whiz', 'حساب کا جادوگر', function () { return doneAll('math') >= 5; }],
+    ['sci', '🔬', '#7C5CFF', 'Young scientist', 'ننھا سائنسدان', function () { return doneAll('sci') >= 4; }],
+    ['isl', '🕌', '#14A38B', 'Dua learner', 'دعا یاد کرنے والا', function () { return doneAll('isl') >= 3; }],
+    ['sto', '📚', '#FF6FA5', 'Story lover', 'کہانیوں کا شوقین', function () { return doneAll('sto') >= 2; }],
+    ['all', '🌈', '#7C5CFF', 'All-rounder', 'ہر فن مولا', function () { return ALL.every(function (s) { return doneAll(s.id) >= 1; }); }],
     ['kind', '💖', '#FF6FA5', '20 good deeds', '۲۰ نیکیاں', function () { return (store('deeds') || 0) >= 20; }]
   ];
   function medal(b, off) {
@@ -135,6 +163,7 @@
   var TABS = [
     ['home', 'Home', 'ہوم', '<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'],
     ['subjects', 'Learn', 'سیکھیں', '<path d="M4 5h6a3 3 0 013 3v12a2 2 0 00-2-2H4zM20 5h-6a3 3 0 00-3 3v12a2 2 0 012-2h7z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>'],
+    ['books', 'Books', 'کتابیں', '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h11M9 8h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'],
     ['play', 'Play', 'کھیل', '<rect x="3" y="7" width="18" height="11" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 10v5M5.5 12.5h5M16 11h.01M18 14h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>'],
     ['rewards', 'Rewards', 'انعامات', '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>']
   ];
@@ -146,7 +175,7 @@
     curTab = n; SFX.tap();
     $$('.tab').forEach(function (s) { s.hidden = s.id !== 'tab-' + n; });
     closePath(); renderNav();
-    ({ home: renderHome, subjects: renderSubjects, play: renderPlay, rewards: renderRewards })[n]();
+    ({ home: renderHome, subjects: renderSubjects, books: renderBooks, play: renderPlay, rewards: renderRewards })[n]();
     $('#tab-' + n).scrollTop = 0;
   }
   $('#nav').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
@@ -167,9 +196,19 @@
     var r = 36, c = 2 * Math.PI * r, f = Math.min(1, n / Math.max(1, total));
     return '<div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="' + r + '" fill="none" stroke="#E6EAF6" stroke-width="10"/><circle cx="42" cy="42" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - f)).toFixed(1) + '"/></svg><div class="t">' + Math.min(n, total) + '/' + total + '</div></div>';
   }
+  var ICON = {
+    eng: '<text x="20" y="27" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="22" fill="#fff">Aa</text>',
+    urd: '<text x="20" y="31" text-anchor="middle" font-family="Noto Nastaliq Urdu,serif" font-weight="700" font-size="24" fill="#fff">ا</text><circle cx="20" cy="12" r="0" fill="#fff"/>',
+    math: '<path d="M10 14h12M16 8v12M24 26h10M10 31l8 8M18 31l-8 8" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none" transform="translate(0 -4)"/>',
+    sci: '<g fill="none" stroke="#fff" stroke-width="2.6"><ellipse cx="20" cy="20" rx="15" ry="6"/><ellipse cx="20" cy="20" rx="15" ry="6" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="15" ry="6" transform="rotate(120 20 20)"/></g><circle cx="20" cy="20" r="3.4" fill="#fff"/>',
+    isl: '<path d="M25 7a13 13 0 1 0 8 22 11 11 0 0 1-8-22z" fill="#fff"/><path d="M30 12l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" fill="#fff"/>',
+    sto: '<path d="M6 9h11a4 4 0 014 4v18a3 3 0 00-3-3H6zM34 9H23a4 4 0 00-4 4v18a3 3 0 013-3h12z" fill="#fff"/>',
+    books: '<path d="M8 7h20a3 3 0 013 3v22H11a3 3 0 01-3-3z" fill="#fff"/><path d="M13 14h13M13 20h9" stroke="rgba(0,0,0,.28)" stroke-width="2.6" stroke-linecap="round"/>'
+  };
+  function ico(id) { return '<span class="ico"><svg viewBox="0 0 40 40" aria-hidden="true">' + (ICON[id] || '') + '</svg></span>'; }
   function scard(s) {
     var done = unitsDone(s.id), tot = s.units.length;
-    return '<button class="scard" data-subj="' + s.id + '" style="--c1:' + s.c1 + ';--c2:' + s.c2 + '"><span class="big">' + s.em + '</span><span><span style="font-weight:700;font-size:19px">' + BT(s.t) + '</span><span class="pb"><i style="width:' + Math.round(done / tot * 100) + '%"></i></span><span style="font-size:12px;opacity:.9">' + done + ' / ' + tot + '</span></span></button>';
+    return '<button class="scard" data-subj="' + s.id + '" style="--c1:' + s.c1 + ';--c2:' + s.c2 + '">' + ico(s.id) + '<span><span style="font-weight:700;font-size:19px">' + BT(s.t) + '</span><span class="pb"><i style="width:' + Math.round(done / tot * 100) + '%"></i></span><span style="font-size:12px;opacity:.9">' + done + ' / ' + tot + '</span></span></button>';
   }
   function renderHome() {
     var L = level(), nu = nextUnit(), ns = subjById(nu.subj), hr = new Date().getHours();
@@ -178,7 +217,7 @@
       '<div class="top" style="position:relative"><div class="avatar">' + mascot('happy', 'sm') + '</div><div><div style="font-weight:700;font-size:20px">' + B(hello[0] + ', ' + esc(P.name) + '!', hello[1] + '، ' + esc(P.name)) + '</div></div><div class="chips"><div class="chip">🔥 ' + streak() + '</div><div class="chip">⭐ ' + totalStars() + '</div><button class="gear" data-act="parent" aria-label="Parent zone">⚙️</button></div></div>';
     h += '<div class="hero" style="background:linear-gradient(135deg,' + ns.c1 + ',' + ns.c2 + ')"><div class="row"><div style="flex:1"><div style="font-size:13px;opacity:.9;font-weight:600;letter-spacing:.6px;text-transform:uppercase">' + B('Continue learning', 'سیکھنا جاری رکھیں') + '</div><div style="font-size:24px;font-weight:700;margin-top:4px">' + BT(nu.t) + '</div><div style="opacity:.9;margin-top:2px">' + ns.em + ' ' + BT(ns.t) + '</div></div>' + mascot('cheer', 'md', true) + '</div><button class="btn3d white" data-unit="' + nu.id + '" style="color:' + ns.c1 + '">' + B('Start', 'شروع کریں') + '</button></div>';
     h += '<div class="card row">' + ringSvg(todayLessons(), goal(), '#34C48B') + '<div style="flex:1"><div class="h2">' + B('Daily goal', 'آج کا ہدف') + '</div><div class="muted sm">' + B('Finish ' + goal() + ' lessons today', 'آج ' + urd(goal()) + ' سبق مکمل کریں') + '</div></div></div>';
-    h += '<div class="h2" style="margin-top:18px">' + B('Subjects', 'مضامین') + '</div><div class="hscroll">' + SUBJ.map(scard).join('') + '</div>';
+    h += '<div class="h2" style="margin-top:18px">' + B('Subjects', 'مضامین') + '</div><div class="sgrid">' + SUBJ.map(scard).join('') + '<button class="scard" data-goto="books" style="--c1:#FF6FA5;--c2:#FF9BC2">' + ico('books') + '<span><span style="font-weight:700;font-size:19px">' + B('Book corner', 'کتابوں کا کونا') + '</span><span style="font-size:12px;opacity:.9">' + visibleBooks().length + ' ' + B('books for you', 'آپ کے لیے') + '</span></span></button></div>';
     h += '<div class="card row" style="background:linear-gradient(135deg,#FFF3C4,#FFE29A)"><div style="font-size:44px">🎯</div><div style="flex:1"><div class="h2">' + B('Daily challenge', 'آج کا چیلنج') + '</div><div class="muted sm">' + B('5 mixed questions', '۵ ملے جلے سوال') + '</div></div><button class="btn3d sm orange" data-act="daily">' + B('Play', 'کھیلیں') + '</button></div>';
     h += '<div class="card row"><div style="font-size:40px">' + L.em + '</div><div style="flex:1"><div class="h2">' + B(L.en, L.ur) + '</div><div class="muted sm">' + B('Level ' + (L.i + 1), 'درجہ ' + urd(L.i + 1)) + '</div></div></div>';
     $('#tab-home').innerHTML = h;
@@ -204,11 +243,43 @@
   }
   function closePath() { $('#path').hidden = true; }
 
+  /* ---------- book corner ---------- */
+  var BOOKS = window.NanheBooks || [], bcat = 'all', RD = null;
+  function bookIn(b) { return band() >= b.bands[0] && band() <= b.bands[1]; }
+  function visibleBooks() { return BOOKS.filter(bookIn); }
+  function bookCard(b) {
+    var ok = bookIn(b), done = (store('read') || {})[b.id];
+    return '<button class="book' + (ok ? '' : ' lock') + '" data-bk="' + b.id + '" style="--c1:' + b.c1 + ';--c2:' + b.c2 + '"><span class="bem">' + b.em + '</span><span style="font-weight:700;font-size:17px;line-height:1.25">' + B(b.t[0], b.t[1]) + '</span><span class="tag">' + (ok ? (done ? '✓ ' + B('Read', 'پڑھ لی') : b.pages.length + ' ' + B('pages', 'صفحات')) : '🔒 ' + (b.bands[0] > band() ? B('Bigger kids', 'بڑے بچوں کے لیے') : B('Little kids', 'چھوٹے بچوں کے لیے'))) + '</span></button>';
+  }
+  function renderBooks() {
+    var cats = window.NanheBookCats || [['all', 'All', 'سب']], list = BOOKS.filter(function (b) { return bcat === 'all' || b.cat === bcat; });
+    list = list.filter(bookIn).concat(list.filter(function (b) { return !bookIn(b); }));
+    $('#tab-books').innerHTML = '<div class="h1">' + B('Book corner', 'کتابوں کا کونا') + '</div><div class="muted sm">' + B('Books for ages ' + bandInfo().age, 'عمر ' + bandInfo().age + ' کے لیے کتابیں') + '</div>' +
+      '<div class="tabs2">' + cats.map(function (c) { return '<button data-bcat="' + c[0] + '" aria-pressed="' + (bcat === c[0]) + '">' + B(c[1], c[2]) + '</button>'; }).join('') + '</div><div class="shelf">' + list.map(bookCard).join('') + '</div>' +
+      '<p class="muted sm" style="margin-top:16px">' + B('More books are coming soon. Every story can be read aloud in English and Urdu.', 'مزید کتابیں جلد آ رہی ہیں۔ ہر کہانی انگریزی اور اردو میں سنی جا سکتی ہے۔') + '</p>';
+  }
+  function openBook(id) {
+    var b = BOOKS.filter(function (x) { return x.id === id; })[0]; if (!b) return;
+    if (!bookIn(b)) { SFX.bad(); return toast(b.bands[0] > band() ? 'This book is for bigger kids' : 'This book is for younger kids', b.bands[0] > band() ? 'یہ کتاب بڑے بچوں کے لیے ہے' : 'یہ کتاب چھوٹے بچوں کے لیے ہے'); }
+    RD = { b: b, i: 0 }; L = { opts: { mode: 'read' } }; $('#lesson').hidden = false; drawBook();
+  }
+  function drawBook() {
+    var b = RD.b, n = b.pages.length;
+    if (RD.i >= n) {
+      var rd = store('read') || {}; var first = !rd[b.id]; rd[b.id] = 1; store('read', rd); if (first) { addBonus(2); confetti(); SFX.win(); }
+      lessonShell('<div style="margin-top:20px">' + mascot('cheer', 'lg', true) + '</div><div class="h1">' + B('The End', 'ختم شد') + '</div><div class="muted">' + (first ? '+2 ⭐' : '') + '</div>', '<button class="btn3d" data-act="quit">' + B('Back to books', 'کتابوں میں واپس') + '</button>', 100); return;
+    }
+    var p = b.pages[RD.i], dots = ''; for (var k = 0; k < n; k++) dots += '<i class="' + (k === RD.i ? 'on' : '') + '"></i>';
+    lessonShell('<div id="reader" style="--c1:' + b.c1 + ';--c2:' + b.c2 + '"><div class="scene" aria-hidden="true">' + p[0] + '</div><div class="txt">' + B(p[1], p[2]) + '</div>' + sayBtns({ sayEn: p[1], sayUr: p[2] }) + '<div class="dots">' + dots + '</div></div>',
+      '<div class="hrow">' + (RD.i > 0 ? '<button class="btn3d white" data-bpage="-1">←</button>' : '') + '<button class="btn3d" data-bpage="1">' + (RD.i === n - 1 ? B('Finish', 'مکمل') : B('Next', 'اگلا')) + ' →</button></div>', Math.round(RD.i / n * 100));
+    if (setting('speak', true) && (setting('mode', 'both') !== 'ur')) setTimeout(function () { if (RD && RD.b === b) speak(p[1], 'en'); }, 300);
+  }
+
   /* ---------- play ---------- */
   function renderPlay() {
     var h = '<div class="h1">' + B('Play', 'کھیل') + '</div><div class="muted sm">' + B('Fun practice, earn stars', 'کھیلیں اور ستارے کمائیں') + '</div>';
     h += '<div class="hero" style="background:linear-gradient(135deg,#FF9B3D,#FFC070)"><div class="row"><div style="flex:1"><div style="font-size:24px;font-weight:700">' + B('Daily challenge', 'آج کا چیلنج') + '</div><div style="opacity:.95">' + B('5 questions from every subject', 'ہر مضمون سے سوال') + '</div></div><div style="font-size:56px">🎯</div></div><button class="btn3d white" data-act="daily" style="color:#D6761D">' + B('Play', 'کھیلیں') + '</button></div>';
-    h += '<div class="h2" style="margin-top:18px">' + B('Quick quiz', 'فوری کوئز') + '</div><div class="sgrid">' + SUBJ.map(function (s) { return '<button class="scard" data-quick="' + s.id + '" style="--c1:' + s.c1 + ';--c2:' + s.c2 + ';min-height:100px"><span class="big" style="font-size:36px">' + s.em + '</span><span style="font-weight:700">' + BT(s.t) + '</span></button>'; }).join('') + '</div>';
+    h += '<div class="h2" style="margin-top:18px">' + B('Quick quiz', 'فوری کوئز') + '</div><div class="sgrid">' + SUBJ.map(function (s) { return '<button class="scard" data-quick="' + s.id + '" style="--c1:' + s.c1 + ';--c2:' + s.c2 + ';min-height:100px">' + ico(s.id) + '<span style="font-weight:700">' + BT(s.t) + '</span></button>'; }).join('') + '</div>';
     h += '<div class="card row"><div style="font-size:44px">🃏</div><div style="flex:1"><div class="h2">' + B('Memory match', 'جوڑی ملاؤ') + '</div><div class="muted sm">' + B('Match pictures with words', 'تصویر کو لفظ سے ملائیں') + '</div></div><button class="btn3d sm purple" data-act="match">' + B('Play', 'کھیلیں') + '</button></div>';
     $('#tab-play').innerHTML = h;
   }
@@ -230,7 +301,7 @@
   function startLesson(unit, opts) {
     opts = opts || {};
     var cards = opts.cards || unit.cards, qs = opts.qs;
-    if (!qs) { qs = unit.quiz(); if (setting('lv', 1) === 2 || (P && P.lv === 2)) qs = qs.concat(unit.quiz()).slice(0, 7); else qs = qs.slice(0, 5); }
+    if (!qs) { var need = bandInfo().q; qs = unit.quiz(); while (qs.length < need) qs = qs.concat(unit.quiz()); qs = qs.slice(0, need); }
     L = { unit: unit, cards: cards, qs: qs, ci: 0, qi: 0, right: 0, retry: [], phase: cards.length ? 'cards' : 'quiz', total: cards.length + qs.length, sel: null, opts: opts };
     $('#lesson').hidden = false; closeModal(); drawLesson();
   }
@@ -309,8 +380,8 @@
     if (st.last !== k) { st = { last: k, n: st.last === yesterdayKey() ? st.n + 1 : 1 }; store('streak', st); }
     var d = store('daily') || {}; d = d.k === k ? d : { k: k, n: 0 }; d.n++; store('daily', d);
   }
-  function quitLesson() { $('#lesson').hidden = true; window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel(); var after = L && L.opts && L.opts.afterSubj; L = null; refresh(); if (after) openPath(after); }
-  function refresh() { ({ home: renderHome, subjects: renderSubjects, play: renderPlay, rewards: renderRewards })[curTab](); }
+  function quitLesson() { RD = null; $('#lesson').hidden = true; window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel(); var after = L && L.opts && L.opts.afterSubj; L = null; refresh(); if (after) openPath(after); }
+  function refresh() { ({ home: renderHome, subjects: renderSubjects, books: renderBooks, play: renderPlay, rewards: renderRewards })[curTab](); }
 
   function startQuick(sid) {
     var s = subjById(sid), pool = shuffle(s.units), qs = [];
@@ -325,7 +396,7 @@
   /* ---------- memory match ---------- */
   function startMatch() {
     var flat = []; window.NanheData2.VOCAB.forEach(function (c) { if (c.id !== 'days' && c.id !== 'colours') c.w.forEach(function (w) { flat.push(w); }); });
-    var n = P.lv === 2 ? 8 : 6, ws = shuffle(flat).slice(0, n), cards = [];
+    var n = bandInfo().pairs, ws = shuffle(flat).slice(0, n), cards = [];
     ws.forEach(function (w, i) { cards.push({ p: i, e: w[2], k: 'e' }); cards.push({ p: i, w: w, k: 'w' }); });
     cards = shuffle(cards);
     var st = { open: [], found: 0, tries: 0, lock: false };
@@ -374,7 +445,7 @@
       '<div style="text-align:start;font-weight:600;margin-top:10px">' + B('Lessons, last 7 days', 'پچھلے ۷ دن کے سبق') + '</div><div class="bars">' + days.map(function (x) { return '<div><i style="height:' + Math.round(x.n / mx * 80) + 'px"></i>' + x.n + '<br>' + x.lab + '</div>'; }).join('') + '</div>' +
       '<div style="text-align:start;font-weight:600;margin-top:14px">' + B('Accuracy by subject', 'مضمون کے لحاظ سے درستگی') + '</div>' + SUBJ.map(function (s) { var x = sub[s.id], p = x && x.t ? Math.round(x.c / x.t * 100) : 0; return '<div class="prow"><span style="width:26px">' + s.em + '</span><div class="pb"><i style="width:' + p + '%;background:' + s.c1 + '"></i></div><span style="width:44px;text-align:end">' + (x && x.t ? p + '%' : '–') + '</span></div>'; }).join('') +
       '<div style="text-align:start;font-weight:600;margin-top:16px">' + B('Language', 'زبان') + '</div><div class="seg" data-set="mode"><button data-v="both" aria-pressed="' + (setting('mode', 'both') === 'both') + '">English + اردو</button><button data-v="en" aria-pressed="' + (setting('mode', 'both') === 'en') + '">English</button><button data-v="ur" aria-pressed="' + (setting('mode', 'both') === 'ur') + '">اردو</button></div>' +
-      '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Age level', 'عمر کی سطح') + '</div><div class="seg" data-set="lv"><button data-v="1" aria-pressed="' + (P.lv !== 2) + '">5–8</button><button data-v="2" aria-pressed="' + (P.lv === 2) + '">9–13</button></div>' +
+      '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Age level', 'عمر کی سطح') + '</div><div class="seg" data-set="band">' + BANDS.map(function (x) { return '<button data-v="' + x.n + '" aria-pressed="' + (band() === x.n) + '">' + x.age + '</button>'; }).join('') + '</div>' +
       '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Daily goal (lessons)', 'روزانہ ہدف (اسباق)') + '</div><div class="seg" data-set="goal">' + [1, 2, 3, 5].map(function (g) { return '<button data-v="' + g + '" aria-pressed="' + (goal() === g) + '">' + g + '</button>'; }).join('') + '</div>' +
       '<div style="text-align:start;font-weight:600;margin-top:12px">' + B('Sounds & voice', 'آوازیں') + '</div><div class="seg"><button data-tog="sound" aria-pressed="' + setting('sound', true) + '">🔔 ' + B('Sound effects', 'آوازیں') + '</button><button data-tog="speak" aria-pressed="' + setting('speak', true) + '">🔊 ' + B('Auto-read words', 'خود پڑھیں') + '</button></div>' +
       '<div class="seg"><button data-act="stats" aria-pressed="' + (window.SMAA ? window.SMAA.statsOn() : false) + '">📊 ' + B('Anonymous usage count', 'گمنام استعمال کی گنتی') + '</button></div>' +
@@ -388,6 +459,10 @@
   document.addEventListener('click', function (e) {
     var t;
     if ((t = e.target.closest('[data-say]'))) { SFX.tap(); return speak(t.dataset.say, t.dataset.lang); }
+    if ((t = e.target.closest('[data-goto]'))) return showTab(t.dataset.goto);
+    if ((t = e.target.closest('[data-bk]'))) return openBook(t.dataset.bk);
+    if ((t = e.target.closest('[data-bcat]'))) { bcat = t.dataset.bcat; SFX.tap(); return renderBooks(); }
+    if ((t = e.target.closest('[data-bpage]'))) { if (!RD) return; RD.i = Math.max(0, Math.min(RD.b.pages.length, RD.i + (+t.dataset.bpage))); SFX.tap(); return drawBook(); }
     if ((t = e.target.closest('[data-subj]'))) { SFX.tap(); return openPath(t.dataset.subj); }
     if ((t = e.target.closest('[data-unit]'))) {
       var u = unitById(t.dataset.unit); if (!u) return;
@@ -404,7 +479,7 @@
     }
     if ((t = e.target.closest('[data-gate]'))) { if (t.dataset.gate === t.dataset.ans) { SFX.ok(); return parentZone(); } SFX.bad(); return closeModal(); }
     if ((t = e.target.closest('[data-set] button'))) {
-      var key = t.parentNode.dataset.set, v = t.dataset.v; P[key] = (key === 'mode') ? v : +v; saveP(); parentZone(); renderNav(); refresh(); return;
+      var key = t.parentNode.dataset.set, v = t.dataset.v; P[key] = (key === 'mode') ? v : +v; if (key === 'band') { P.lv = P.band >= 3 ? 2 : 1; applyBand(); } saveP(); parentZone(); renderNav(); refresh(); return;
     }
     if ((t = e.target.closest('[data-tog]'))) { var tk = t.dataset.tog; P[tk] = !setting(tk, tk !== 'unlock'); saveP(); parentZone(); return; }
     if ((t = e.target.closest('[data-act]'))) {
@@ -425,21 +500,25 @@
 
   /* ---------- welcome and start ---------- */
   function welcome() {
-    var w = $('#welcome'), pick = { lv: 1, mode: 'both' };
+    var w = $('#welcome'), pick = { band: 2, mode: 'both' };
+    function ageCards() {
+      return BANDS.map(function (x) { var sv = P; P = { band: x.n }; var m = mascot('happy', 'sm'); P = sv; return '<button class="agecard" data-band="' + x.n + '" style="--c:' + x.c + '" aria-pressed="' + (pick.band === x.n) + '">' + m + '<span>' + x.age + '</span><small>' + x.en + ' · <span class="ur">' + x.ur + '</span></small></button>'; }).join('');
+    }
     w.innerHTML = '<div style="margin-top:6px">' + mascot('cheer', 'lg', true) + '</div><div class="h1" style="margin-top:6px">Welcome to Nanhe Sitare!</div><div class="ur" style="font-size:24px;line-height:1.9">ننھے ستارے میں خوش آمدید!</div>' +
       '<div style="margin-top:14px;font-weight:600">What is your name? <span class="ur">آپ کا نام؟</span></div><input id="nameIn" maxlength="20" placeholder="Name / نام" autocomplete="off">' +
-      '<div style="margin-top:14px;font-weight:600">Your age <span class="ur">آپ کی عمر</span></div><div class="seg" id="wLv"><button data-lv="1" aria-pressed="true">5 – 8</button><button data-lv="2" aria-pressed="false">9 – 13</button></div>' +
+      '<div style="margin-top:14px;font-weight:600">How old are you? <span class="ur">آپ کی عمر؟</span></div><div class="agegrid" id="wAge">' + ageCards() + '</div>' +
       '<div style="margin-top:14px;font-weight:600">Language <span class="ur">زبان</span></div><div class="seg" id="wMode"><button data-mode="both" aria-pressed="true">English + اردو</button><button data-mode="en" aria-pressed="false">English</button><button data-mode="ur" aria-pressed="false">اردو</button></div>' +
       '<button class="btn3d" id="wGo" style="margin-top:22px">Let’s go! · چلیں!</button><p class="muted sm" style="margin-top:12px">No ads · No accounts · Everything stays on your device<br><span class="ur">کوئی اشتہار نہیں · ہر چیز آپ کے فون میں</span></p>';
     w.hidden = false;
     w.onclick = function (e) {
-      var b = e.target.closest('#wLv button'), m = e.target.closest('#wMode button');
-      if (b) { pick.lv = +b.dataset.lv; $$('#wLv button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); SFX.tap(); }
+      var b = e.target.closest('#wAge button'), m = e.target.closest('#wMode button');
+      if (b) { pick.band = +b.dataset.band; $$('#wAge button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); SFX.tap(); }
       if (m) { pick.mode = m.dataset.mode; $$('#wMode button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === m)); }); SFX.tap(); }
-      if (e.target.closest('#wGo')) { P = { name: ($('#nameIn').value.trim() || 'Friend'), lv: pick.lv, mode: pick.mode, goal: 2, sound: true, speak: true, unlock: false }; saveP(); w.hidden = true; renderNav(); showTab('home'); SFX.win(); }
+      if (e.target.closest('#wGo')) { P = { name: ($('#nameIn').value.trim() || 'Friend'), band: pick.band, lv: pick.band >= 3 ? 2 : 1, mode: pick.mode, goal: 2, sound: true, speak: true, unlock: false }; saveP(); applyBand(); w.hidden = true; renderNav(); showTab('home'); SFX.win(); }
     };
   }
   $('#splashStar').innerHTML = mascot('cheer', 'lg', true);
+  applyBand();
   if (!P) welcome(); else { renderNav(); showTab('home'); }
   setTimeout(function () { var s = $('#splash'); s.classList.add('gone'); setTimeout(function () { s.remove(); }, 700); }, 1500);
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(function () { /* offline cache unavailable */ });
